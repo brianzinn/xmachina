@@ -1,0 +1,29 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "linterOptions": {
+        "exclude": [
+            "src/AuthMessage.ts"
+        ]
+    },
+    "jsRules": {},
+    "rules": {
+        "trailing-comma": [ false ],
+        "no-console": {
+            "severity": "off",
+            "options": [
+                "log",
+                "error",
+                "debug",
+                "info",
+                "time",
+                "timeEnd",
+                "trace"
+            ]
+        },
+        "variable-name": {"severity": "warn"}
+    },
+    "rulesDirectory": []
+}
