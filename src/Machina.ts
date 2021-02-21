@@ -1,15 +1,24 @@
-import { Nullable } from ".";
+import { Nullable } from "./index";
 
-export type MachinaState<S, T extends Transition<S>> = {
+/**
+ * Current state and transitions to other states.
+ */
+export type MachinaState<S, E, T extends Transition<S, E>> = {
+  /**
+   * Current machina state
+   */
   current: S,
+  /**
+   * All transitions (edges) to other states, if any.
+   */
   possibleTransitions: T[]
 }
 
-export type Transition<S> = {
+export type Transition<S, E> = {
   /**
    * Name to uniquely (from this state) identify the transition (not needed to be unique across other states)
    */
-  name: string
+  edge: E
   /**
    * Description of the transition (optional)
    */
@@ -20,36 +29,41 @@ export type Transition<S> = {
   nextState: S
 }
 
-export interface IMachina<S, T extends Transition<S>> {
-  transitionTo: (transition: T) => Nullable<MachinaState<S, T>>
-  readonly state: MachinaState<S, T>
+export interface IMachina<S, E, T extends Transition<S, E>> {
+  /**
+   * Edge to follow from current state to another state (edge is the input that triggers a transition).
+   */
+  trigger: (edge: E) => Nullable<MachinaState<S, E, T>>
+
+  /**
+   * Current machine state (includes transitions out of current state, if any)
+   */
+  readonly state: MachinaState<S, E, T>
 }
 
-export class Machina<S, T extends Transition<S>> implements IMachina<S, T> {
+export class Machina<S, E, T extends Transition<S, E>> implements IMachina<S, E, T> {
   private currentState: S;
   constructor(initialState: S, private stateMap: Map<S, T[]>) {
     this.currentState = initialState;
   }
 
-  get state(): MachinaState<S, T> {
+  get state(): MachinaState<S, E, T> {
     return {
       current: this.currentState,
-      possibleTransitions: this.stateMap.get(this.currentState) ?? []
+      possibleTransitions: this.stateMap.get(this.currentState)!
     }
   }
 
-  transitionTo = (transition: T | string): Nullable<MachinaState<S, T>> => {
+  trigger = (edge: E) => {
     const transitions: T[] = (this.stateMap.get(this.currentState))!;
-    const transitionName: string = typeof(transition) === 'string' ? transition : transition.name;
-    const match: T | undefined = transitions.find(t => t.name === transitionName);
+    const match: T | undefined = transitions.find(t => t.edge === edge);
     if (match === undefined) {
       return null;
     } else {
       this.currentState = match.nextState;
-      const posssibleTransitions = this.stateMap.get(match.nextState);
-      const result: MachinaState<S, T> = {
+      const result: MachinaState<S, E, T> = {
         current: match.nextState,
-        possibleTransitions: posssibleTransitions ?? []
+        possibleTransitions: this.stateMap.get(match.nextState)!
       }
       return result;
     }

@@ -2,10 +2,12 @@
 Simple  Typesafe State Machine.
 
 name inspired from the movie ex-machina.
+[![NPM version](http://img.shields.io/npm/v/xmachina.svg?style=flat-square)](https://www.npmjs.com/package/xmachina)
+[![Coverage Status](https://coveralls.io/repos/github/brianzinn/xmachina/badge.svg?branch=main)](https://coveralls.io/github/brianzinn/xmachina?branch=main)
 
 Just a simple state machine that allows working with a typesafe state machine.  Although you can use strings to represent states, also allows numbers/enums.
 
-Has a fluent API for building state machines or you can create you own with a Map.
+100% code coverage. Fluent API for building state machines or you can create you own with a Map (and extra edge properties).
 
 To include in your project:
 ```bash
@@ -19,24 +21,31 @@ enum LightState {
   Off
 };
 
-const machina = createMachina<LightState, Transition<LightState>>(LightState.On)
+enum LightTransition {
+  TurnOff,
+  TurnOn
+}
+
+const machina = createMachina<LightState, LightTransition>(LightState.On)
   .addState(LightState.On, {
-    name: 'off',
+    edge: LightTransition.TurnOff,
     nextState: LightState.Off,
     description: 'turn off light switch'
   })
   .addState(LightState.Off, {
-    name: 'on',
+    edge: LightTransition.TurnOn,
     nextState: LightState.On,
     description: 'turn on light switch'
   })
   .build();
 
 assert.strictEqual(LightState.On, machina.state.current);
-assert.deepStrictEqual(['off'], machina.state.possibleTransitions.map(t => t.name));
+assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
 
-const newState = machina.transitionTo('off');
+const newState = machina.trigger(LightTransition.TurnOff);
+assert.notStrictEqual(null, newState);
+assert.strictEqual(newState!.current, LightState.Off);
 ```
 
 ## TODO:
-* add observables
+* add observables/events

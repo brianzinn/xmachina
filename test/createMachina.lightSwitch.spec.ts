@@ -1,57 +1,101 @@
 import assert from 'assert';
-import { createMachina, Transition } from '../src';
+import { createMachina } from '../src';
 
-describe(' > createMachina builder tests', () => {
+describe(' > createMachina light switch builder tests', () => {
+  enum LightState {
+    On,
+    Off
+  };
+
+  enum LightTransition {
+    TurnOff,
+    TurnOn
+  }
+
   it('Toggle basic test by transition object', async () => {
-    enum LightState {
-      On,
-      Off
-    };
-
-    const machina = createMachina<LightState, Transition<LightState>>(LightState.On)
+    const machina = createMachina<LightState, LightTransition>(LightState.On)
       .addState(LightState.On, {
-        name: 'off',
+        edge: LightTransition.TurnOff,
         nextState: LightState.Off,
         description: 'turn off light switch'
       })
       .addState(LightState.Off, {
-        name: 'on',
+        edge: LightTransition.TurnOn,
         nextState: LightState.On,
         description: 'turn on light switch'
       })
       .build();
 
     assert.strictEqual(LightState.On, machina.state.current);
-    assert.deepStrictEqual(['off'], machina.state.possibleTransitions.map(t => t.name));
+    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
 
-    const newState = machina.transitionTo(machina.state.possibleTransitions[0]);
+    const newState = machina.trigger(machina.state.possibleTransitions[0].edge);
     assert.notStrictEqual(null, newState);
     assert.strictEqual(newState!.current, LightState.Off);
   });
 
   it('Toggle basic test by transition name (string)', async () => {
-    enum LightState {
-      On,
-      Off
-    };
-
-    const machina = createMachina<LightState, Transition<LightState>>(LightState.On)
+    const machina = createMachina<LightState, LightTransition>(LightState.On)
       .addState(LightState.On, {
-        name: 'off',
+        edge: LightTransition.TurnOff,
         nextState: LightState.Off,
         description: 'turn off light switch'
       })
       .addState(LightState.Off, {
-        name: 'on',
+        edge: LightTransition.TurnOn,
         nextState: LightState.On,
         description: 'turn on light switch'
       })
       .build();
 
     assert.strictEqual(LightState.On, machina.state.current);
-    assert.deepStrictEqual(['off'], machina.state.possibleTransitions.map(t => t.name));
+    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
 
-    const newState = machina.transitionTo('off');
+    const newState = machina.trigger(LightTransition.TurnOff);
+    assert.notStrictEqual(null, newState);
+    assert.strictEqual(newState!.current, LightState.Off);
+  });
+
+  it('Toggle basic test by transition name (string)', async () => {
+    const machina = createMachina<LightState, LightTransition>(LightState.On)
+      .addState(LightState.On, {
+        edge: LightTransition.TurnOff,
+        nextState: LightState.Off,
+        description: 'turn off light switch'
+      })
+      .addState(LightState.Off, {
+        edge: LightTransition.TurnOn,
+        nextState: LightState.On,
+        description: 'turn on light switch'
+      })
+      .build();
+
+    assert.strictEqual(LightState.On, machina.state.current);
+    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
+
+    // cannot traverse to "on" it's already "on".
+    const newState = machina.trigger(LightTransition.TurnOn);
+    assert.strictEqual(null, newState);
+  });
+
+  it('Toggle basic test by transition object (add states as arrays)', async () => {
+    const machina = createMachina<LightState, LightTransition>(LightState.On)
+      .addState(LightState.On, [{
+        edge: LightTransition.TurnOff,
+        nextState: LightState.Off,
+        description: 'turn off light switch'
+      }])
+      .addState(LightState.Off, [{
+        edge: LightTransition.TurnOn,
+        nextState: LightState.On,
+        description: 'turn on light switch'
+      }])
+      .build();
+
+    assert.strictEqual(LightState.On, machina.state.current);
+    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
+
+    const newState = machina.trigger(LightTransition.TurnOff);
     assert.notStrictEqual(null, newState);
     assert.strictEqual(newState!.current, LightState.Off);
   });
