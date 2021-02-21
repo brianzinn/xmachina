@@ -1,5 +1,7 @@
 src
 test
+.nyc_output
+coverage
 tsconfig.json
 tsconfig.test.json
 tslint.json

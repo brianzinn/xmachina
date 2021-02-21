@@ -1,20 +1,23 @@
 {
-    "compilerOptions": {
-        "declaration": true,
-        "jsx": "react",
-        "target": "es5",
-        "module": "ES2015",
-        "moduleResolution": "node",
-        "noImplicitAny": true,
-        "allowSyntheticDefaultImports": true,
-        "declarationDir": "dist/types",
-        "esModuleInterop": true,
-        "sourceMap": true,
-        "strictNullChecks": true,
-        "outDir": "dist"
-      },
-      "include": [
-        "src"
-      ],
-      "types": ["typePatches", "node", "webpack-env", "type"]
-  }
+  "compilerOptions": {
+    "declaration": true,
+    "jsx": "react",
+    "target": "es5",
+    "module": "ES2015",
+    "noImplicitAny": true,
+    "declarationDir": "dist/types",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "outDir": "dist"
+  },
+  "include": [
+    "src"
+  ],
+  "types": [
+    "typePatches",
+    "node",
+    "webpack-env",
+    "type"
+  ]
+}
