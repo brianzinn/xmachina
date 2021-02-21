@@ -30,7 +30,7 @@
     "@types/node": "^14.14.31",
     "@types/sinon": "^9.0.10",
     "cross-env": "^7.0.3",
-    "github-release-notes": "^0.17.3",
+    "github-release-notes": "0.17.2",
     "mocha": "^8.3.0",
     "nyc": "^15.1.0",
     "sinon": "^9.2.4",

@@ -1,8 +1,13 @@
 src
 test
+
+.github
+.grenrc.json
 .nyc_output
+.vscode
+
 coverage
+README.md
 tsconfig.json
 tsconfig.test.json
 tslint.json
-README.md
