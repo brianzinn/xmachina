@@ -29,7 +29,7 @@ describe(' > createMachina light switch builder tests', () => {
     assert.strictEqual(LightState.On, machina.state.current);
     assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
 
-    const newState = machina.trigger(machina.state.possibleTransitions[0].edge);
+    const newState = machina.transition(machina.state.possibleTransitions[0].edge);
     assert.notStrictEqual(null, newState);
     assert.strictEqual(newState!.current, LightState.Off);
   });
@@ -51,7 +51,7 @@ describe(' > createMachina light switch builder tests', () => {
     assert.strictEqual(LightState.On, machina.state.current);
     assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
 
-    const newState = machina.trigger(LightTransition.TurnOff);
+    const newState = machina.transition(LightTransition.TurnOff);
     assert.notStrictEqual(null, newState);
     assert.strictEqual(newState!.current, LightState.Off);
   });
@@ -74,7 +74,7 @@ describe(' > createMachina light switch builder tests', () => {
     assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
 
     // cannot traverse to "on" it's already "on".
-    const newState = machina.trigger(LightTransition.TurnOn);
+    const newState = machina.transition(LightTransition.TurnOn);
     assert.strictEqual(null, newState);
   });
 
@@ -95,7 +95,7 @@ describe(' > createMachina light switch builder tests', () => {
     assert.strictEqual(LightState.On, machina.state.current);
     assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
 
-    const newState = machina.trigger(LightTransition.TurnOff);
+    const newState = machina.transition(LightTransition.TurnOff);
     assert.notStrictEqual(null, newState);
     assert.strictEqual(newState!.current, LightState.Off);
   });

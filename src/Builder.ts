@@ -1,4 +1,4 @@
-import { Machina, Transition } from "./Machina";
+import { Machina, NodeState, Transition } from "./Machina";
 
 export interface IMachinaBuilder<S, E, T extends Transition<S, E>> {
   /**
@@ -6,7 +6,7 @@ export interface IMachinaBuilder<S, E, T extends Transition<S, E>> {
    * @param state State to include
    * @param transitions transition(s) from state to include
    */
-  addState(state: S, transitions: T | T[]): IMachinaBuilder<S, E, T>
+  addState(state: S, transitions: T | T[], onEnter?: () => Promise<void>): IMachinaBuilder<S, E, T>
   /**
    * Return the state machine based on all states and transitions added.
    */
@@ -17,17 +17,31 @@ export interface IMachinaBuilder<S, E, T extends Transition<S, E>> {
  * Machine builder.
  */
 export class MachinaBuilder<S, E, T extends Transition<S, E>> implements IMachinaBuilder<S, E, T> {
-  private stateMap: Map<S, T[]> = new Map<S, T[]>();
+  private stateMap: Map<S, NodeState<S, E, T>> = new Map<S, NodeState<S, E, T>>();
 
   constructor(private initialState: S) {
   }
 
-  addState = (state: S, transitions: T | T[]) => {
-    const newTransitions: T[] = Array.isArray(transitions) ? transitions : [transitions];
+  addState = (state: S, transitions: T | T[], onEnter?: () => Promise<void>) => {
+    let nodeState: NodeState<S, E, T>;
     if(this.stateMap.has(state)) {
-      this.stateMap.get(state)!.push(...newTransitions);
+      nodeState = this.stateMap.get(state)!;
     } else {
-      this.stateMap.set(state, newTransitions);
+      nodeState = {
+        outEdges: []
+      }
+      this.stateMap.set(state, nodeState);
+    }
+
+    const newTransitions: T[] = Array.isArray(transitions) ? transitions : [transitions];
+    nodeState.outEdges.push(...newTransitions);
+
+    if (onEnter !== undefined) {
+      if (nodeState.onEnter !== undefined) {
+        // not the most useful error for non-string enums...
+        console.warn(`overwriting state '${state}' onEnter (did you mean to use a transition.onEnter instead)`);
+      }
+      nodeState.onEnter = onEnter;
     }
     return this;
   };

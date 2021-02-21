@@ -4,6 +4,7 @@
     "declaration": false,
     "module": "commonjs",
     "outDir": "testOutDir",
+    "moduleResolution": "Node"
   },
   "include": [
     "src/**/*",
