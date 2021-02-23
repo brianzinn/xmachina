@@ -1,9 +1,8 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "declaration": false,
-    "module": "commonjs",
-    "outDir": "testOutDir",
+    "target": "ES6",
+    "module": "CommonJS",
+    "esModuleInterop": true,
     "moduleResolution": "Node"
   },
   "include": [

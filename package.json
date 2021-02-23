@@ -13,7 +13,7 @@
     "watch": "tsc --watch",
     "unit-test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" mocha --require ts-node/register test/**/*.spec.ts --timeout=8000 --exit",
     "test": "npm run unit-test",
-    "test:coverage": "nyc --reporter=lcov --reporter=text-summary npm run test"
+    "test:coverage": "nyc --check-coverage=true --reporter=lcov --reporter=text-summary npm run test"
   },
   "repository": {
     "type": "git",

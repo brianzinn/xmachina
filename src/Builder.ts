@@ -1,4 +1,4 @@
-import { Machina, NodeState, Transition } from "./Machina";
+import { IMachina, Machina, NodeState, Transition } from "./Machina";
 
 export interface IMachinaBuilder<S, E, T extends Transition<S, E>> {
   /**
@@ -10,7 +10,9 @@ export interface IMachinaBuilder<S, E, T extends Transition<S, E>> {
   /**
    * Return the state machine based on all states and transitions added.
    */
-  build(): Machina<S, E, T>
+  build(): IMachina<S, E, T>
+
+  buildAndStart(): IMachina<S, E, T>
 }
 
 /**
@@ -46,8 +48,12 @@ export class MachinaBuilder<S, E, T extends Transition<S, E>> implements IMachin
     return this;
   };
 
-  build = () => {
+  build = (): IMachina<S, E, T> => {
     return new Machina(this.initialState, this.stateMap);
+  }
+
+  buildAndStart = (): IMachina<S, E, T> => {
+    return this.build().start();
   }
 }
 

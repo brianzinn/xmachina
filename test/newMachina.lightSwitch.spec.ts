@@ -33,7 +33,7 @@ describe(' > new Machina(...) tests', () => {
         onEnter: async () => console.log('light turned off')
       }]
     ]))
-
+    machina.start();
     assert.strictEqual(LightState.On, machina.state.current);
     assert.deepStrictEqual([LightEdge.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
 

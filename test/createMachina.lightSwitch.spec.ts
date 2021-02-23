@@ -25,6 +25,7 @@ describe(' > createMachina light switch builder tests', () => {
         description: 'turn on light switch'
       })
       .build();
+    machina.start();
 
     assert.strictEqual(LightState.On, machina.state.current);
     assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
@@ -46,7 +47,7 @@ describe(' > createMachina light switch builder tests', () => {
         nextState: LightState.On,
         description: 'turn on light switch'
       })
-      .build();
+      .buildAndStart();
 
     assert.strictEqual(LightState.On, machina.state.current);
     assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
@@ -68,7 +69,7 @@ describe(' > createMachina light switch builder tests', () => {
         nextState: LightState.On,
         description: 'turn on light switch'
       })
-      .build();
+      .buildAndStart();
 
     assert.strictEqual(LightState.On, machina.state.current);
     assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
@@ -90,7 +91,7 @@ describe(' > createMachina light switch builder tests', () => {
         nextState: LightState.On,
         description: 'turn on light switch'
       }])
-      .build();
+      .buildAndStart();
 
     assert.strictEqual(LightState.On, machina.state.current);
     assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));

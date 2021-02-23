@@ -43,7 +43,7 @@ describe(' > createMachina traffic light builder tests', () => {
         nextState: LightState.Green,
         description: "to green"
       }, async () => console.log('turning red'))
-      .build();
+      .buildAndStart();
 
     assert.strictEqual(LightState.Green, machina.state.current);
     // todo: put in timers and mock them...

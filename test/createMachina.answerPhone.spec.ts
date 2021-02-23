@@ -61,7 +61,7 @@ describe(' > createMachina answer phone builder tests', () => {
         nextState: PhoneState.Idle,
         description: "Hang up call on hold (not nice!)"
       }])
-      .build();
+      .buildAndStart();
 
     const consoleWarn = console.warn as SinonSpy;
     assert.strictEqual(consoleWarn.callCount, 1, 'console.warn called once');

@@ -40,6 +40,13 @@ const machina = createMachina<LightState, LightTransition>(LightState.On)
   }, async () => console.log('light turned off'))
   .build();
 
+// before starting you can register for events in a strongly typed manner.
+// subscribe to ALL events
+const observeEveryting = machina.subscribe((eventData: EventData<LightState | LightTransition>) => console.log('all', eventData));
+// subscribe only for the Light is turned on:
+machina.subscribe((eventData: EventData<LightState | LightTransition>) => console.log('all', eventData), NotificationType.StateEnter, LightState.On);
+// start machine initiates "StateEnter" for the initial configured state.
+machina.start();
 assert.strictEqual(LightState.On, machina.state.current);
 assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
 
@@ -74,5 +81,5 @@ const machina = new Machina(LightState.On, new Map<LightState, NodeState<LightSt
 Name inspired from the movie ex-machina, but a tribute to popular library xstate (did not find machina.js till after - it does not look to be actively maintained).
 
 ## TODO:
-* add observables for events
-* add hierarchy for state machines
+* add events when leaving State and navigating transitions
+* add hierarchy example for state machines
