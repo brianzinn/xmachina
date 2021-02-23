@@ -1,6 +1,6 @@
 {
   "name": "xmachina",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Simple  Typesafe State Machine",
   "main": "dist/index.js",
   "typings": "dist/types/index.d.ts",
