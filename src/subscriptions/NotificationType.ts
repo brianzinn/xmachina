@@ -1,8 +1,8 @@
+/**
+ * Uses flags, so enumerations can be combined.
+ * ie: StateEnter & StateLeave will notify on both.
+ */
 export enum NotificationType {
-  /**
-   * Should not be used
-   */
-  None = 0,
   /**
    * When a state is entered
    * NOTE: 0x001

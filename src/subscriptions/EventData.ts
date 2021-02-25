@@ -1,12 +1,22 @@
+import { Nullable } from "../index";
 import { NotificationType } from "./NotificationType";
+
+export type EventValues<U> = {
+  old: Nullable<U>
+  new: U
+}
 
 export type EventData<U> = {
   /**
-   * ie: State on Enter/Leave or Transition
+   * ie: State on Enter/Leave or Transition (as enumeration)
    */
   notificationType: NotificationType
   /**
-   * For the state or transition the value
+   * Friendly name for the notification (as string)
    */
-  value: U
+  event: string
+  /**
+   * For the state or transition the old (if applicable) and new values
+   */
+  value: EventValues<U>
 }

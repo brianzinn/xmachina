@@ -5,8 +5,15 @@ export interface IMachinaBuilder<S, E, T extends Transition<S, E>> {
    * Add state and list of possible transitions (can be called with same state, but name must be unique)
    * @param state State to include
    * @param transitions transition(s) from state to include
+   * @param onEnter optional callback when state is entered
+   * @param onLeave optional callback when state is left
    */
-  addState(state: S, transitions: T | T[], onEnter?: () => Promise<void>): IMachinaBuilder<S, E, T>
+  addState(
+    state: S,
+    transitions: T | T[],
+    onEnter?: () => Promise<void>,
+    onLeave?: () => Promise<void>
+  ): IMachinaBuilder<S, E, T>
   /**
    * Return the state machine based on all states and transitions added.
    */
@@ -24,7 +31,7 @@ export class MachinaBuilder<S, E, T extends Transition<S, E>> implements IMachin
   constructor(private initialState: S) {
   }
 
-  addState = (state: S, transitions: T | T[], onEnter?: () => Promise<void>) => {
+  addState = (state: S, transitions: T | T[], onEnter?: () => Promise<void>, onLeave?: () => Promise<void>) => {
     let nodeState: NodeState<S, E, T>;
     if(this.stateMap.has(state)) {
       nodeState = this.stateMap.get(state)!;
@@ -41,9 +48,16 @@ export class MachinaBuilder<S, E, T extends Transition<S, E>> implements IMachin
     if (onEnter !== undefined) {
       if (nodeState.onEnter !== undefined) {
         // not the most useful error for non-string enums...
-        console.warn(`overwriting state '${state}' onEnter (did you mean to use a transition.onEnter instead)`);
+        console.warn(`overwriting state '${state}' onEnter (did you mean to use a transition callback instead?)`);
       }
       nodeState.onEnter = onEnter;
+    }
+    if (onLeave !== undefined) {
+      if (nodeState.onLeave !== undefined) {
+        // not the most useful error for non-string enums...
+        console.warn(`overwriting state '${state}' onLeave (did you mean to use a transition callback instead?)`);
+      }
+      nodeState.onLeave = onLeave;
     }
     return this;
   };

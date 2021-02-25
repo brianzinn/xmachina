@@ -29,17 +29,17 @@ describe(' > createMachina traffic light builder tests', () => {
   it('Test traffic light with multiple out edges and onEnter.', async () => {
     const machina = createMachina<LightState, LightTransitions>(LightState.Green)
       .addState(LightState.Green, {
-        edge: LightTransitions.Next,
+        on: LightTransitions.Next,
         nextState: LightState.Amber,
         description: 'to amber'
       }, async () => console.log('turning green'))
       .addState(LightState.Amber, {
-        edge: LightTransitions.Next,
+        on: LightTransitions.Next,
         nextState: LightState.Red,
         description: 'to red'
       }, async () => console.log('turning amber'))
       .addState(LightState.Red, {
-        edge: LightTransitions.Next,
+        on: LightTransitions.Next,
         nextState: LightState.Green,
         description: "to green"
       }, async () => console.log('turning red'))
@@ -51,7 +51,7 @@ describe(' > createMachina traffic light builder tests', () => {
     assert.strictEqual(logger.callCount, 1, 'console.log called once');
     assert.deepStrictEqual(logger.firstCall.args, ['turning green'], 'should have logged when green was entered (on init)');
 
-    machina.transition(LightTransitions.Next);
+    await machina.transition(LightTransitions.Next);
     assert.strictEqual(logger.callCount, 2, 'console.log called twice (once for each transition)');
     assert.deepStrictEqual(logger.secondCall.args, ['turning amber'], 'should have logged when turning amber (from green transition)');
   });

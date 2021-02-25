@@ -15,12 +15,12 @@ describe(' > createMachina light switch builder tests', () => {
   it('Toggle basic test by transition object', async () => {
     const machina = createMachina<LightState, LightTransition>(LightState.On)
       .addState(LightState.On, {
-        edge: LightTransition.TurnOff,
+        on: LightTransition.TurnOff,
         nextState: LightState.Off,
         description: 'turn off light switch'
       })
       .addState(LightState.Off, {
-        edge: LightTransition.TurnOn,
+        on: LightTransition.TurnOn,
         nextState: LightState.On,
         description: 'turn on light switch'
       })
@@ -28,9 +28,9 @@ describe(' > createMachina light switch builder tests', () => {
     machina.start();
 
     assert.strictEqual(LightState.On, machina.state.current);
-    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
+    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.on));
 
-    const newState = machina.transition(machina.state.possibleTransitions[0].edge);
+    const newState = await machina.transition(machina.state.possibleTransitions[0].on);
     assert.notStrictEqual(null, newState);
     assert.strictEqual(newState!.current, LightState.Off);
   });
@@ -38,21 +38,21 @@ describe(' > createMachina light switch builder tests', () => {
   it('Toggle basic test by transition name (string)', async () => {
     const machina = createMachina<LightState, LightTransition>(LightState.On)
       .addState(LightState.On, {
-        edge: LightTransition.TurnOff,
+        on: LightTransition.TurnOff,
         nextState: LightState.Off,
         description: 'turn off light switch'
       })
       .addState(LightState.Off, {
-        edge: LightTransition.TurnOn,
+        on: LightTransition.TurnOn,
         nextState: LightState.On,
         description: 'turn on light switch'
       })
       .buildAndStart();
 
     assert.strictEqual(LightState.On, machina.state.current);
-    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
+    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.on));
 
-    const newState = machina.transition(LightTransition.TurnOff);
+    const newState = await machina.transition(LightTransition.TurnOff);
     assert.notStrictEqual(null, newState);
     assert.strictEqual(newState!.current, LightState.Off);
   });
@@ -60,43 +60,43 @@ describe(' > createMachina light switch builder tests', () => {
   it('Toggle basic test by transition name (string)', async () => {
     const machina = createMachina<LightState, LightTransition>(LightState.On)
       .addState(LightState.On, {
-        edge: LightTransition.TurnOff,
+        on: LightTransition.TurnOff,
         nextState: LightState.Off,
         description: 'turn off light switch'
       })
       .addState(LightState.Off, {
-        edge: LightTransition.TurnOn,
+        on: LightTransition.TurnOn,
         nextState: LightState.On,
         description: 'turn on light switch'
       })
       .buildAndStart();
 
     assert.strictEqual(LightState.On, machina.state.current);
-    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
+    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.on));
 
     // cannot traverse to "on" it's already "on".
-    const newState = machina.transition(LightTransition.TurnOn);
+    const newState = await machina.transition(LightTransition.TurnOn);
     assert.strictEqual(null, newState);
   });
 
   it('Toggle basic test by transition object (add states as arrays)', async () => {
     const machina = createMachina<LightState, LightTransition>(LightState.On)
       .addState(LightState.On, [{
-        edge: LightTransition.TurnOff,
+        on: LightTransition.TurnOff,
         nextState: LightState.Off,
         description: 'turn off light switch'
       }])
       .addState(LightState.Off, [{
-        edge: LightTransition.TurnOn,
+        on: LightTransition.TurnOn,
         nextState: LightState.On,
         description: 'turn on light switch'
       }])
       .buildAndStart();
 
     assert.strictEqual(LightState.On, machina.state.current);
-    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.edge));
+    assert.deepStrictEqual([LightTransition.TurnOff], machina.state.possibleTransitions.map(t => t.on));
 
-    const newState = machina.transition(LightTransition.TurnOff);
+    const newState = await machina.transition(LightTransition.TurnOff);
     assert.notStrictEqual(null, newState);
     assert.strictEqual(newState!.current, LightState.Off);
   });

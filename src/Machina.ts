@@ -22,7 +22,7 @@ export type Transition<S, E> = {
   /**
    * Name to uniquely (from this state) identify the transition (not needed to be unique across other states)
    */
-  edge: E
+  on: E
   /**
    * Description of the transition (optional)
    */
@@ -34,17 +34,36 @@ export type Transition<S, E> = {
   /**
    * Optional method to call when this edge is traversed (to next state)
    */
-  onTraversal?: () => Promise<void>
+  onTransition?: () => Promise<void>
+}
+
+const getEventData = <U>(notificationType: NotificationType, oldValue: Nullable<U>, newValue: U): EventData<U> => {
+  const friendly = (nt: NotificationType): string => {
+    return (nt === NotificationType.StateEnter)
+      ? 'StateEnter'
+      : 'StateLeave';
+  }
+
+  return {
+    notificationType,
+    event: friendly(notificationType),
+    value: {
+      new: newValue,
+      old: oldValue
+    }
+  }
 }
 
 export interface IMachina<S, E, T extends Transition<S, E>> {
 
   start(): IMachina<S, E, T>
   /**
-   * Edge to follow from current state to another state (edge is the input that triggers a transition).
+   * Edge to follow from current state to another state (transition is the input that triggers a transition).
    * Return the result of the transition (or null) instead of IMachine, so cannot be used fluently.
+   *
+   * @param transition The transition to follow from current state
    */
-  transition(edge: E): Nullable<MachinaState<S, E, T>>
+  transition(transition: E): Promise<Nullable<MachinaState<S, E, T>>>
 
   /**
    * Current machine state (includes transitions out of current state, if any)
@@ -96,10 +115,8 @@ export class Machina<S, E, T extends Transition<S, E>> implements IMachina<S, E,
 
   start(): IMachina<S, E, T> {
     const currentNodeState: NodeState<S, E, T> | undefined = this.stateMap.get(this.currentState);
-    this.onEventObservable.notifyObservers({
-      notificationType: NotificationType.StateEnter,
-      value: this.currentState
-    });
+    this.onEventObservable.notifyObservers(getEventData<S>(NotificationType.StateEnter, null, this.currentState));
+
     if (currentNodeState !== undefined && currentNodeState.onEnter) {
       currentNodeState.onEnter();
     }
@@ -126,31 +143,34 @@ export class Machina<S, E, T extends Transition<S, E>> implements IMachina<S, E,
     }
   }
 
-  transition = (edge: E) => {
+  transition = async (edge: E): Promise<Nullable<MachinaState<S, E, T>>> => {
     if (!this.started) {
       throw new Error('Must start() Machine before transition(...).')
     }
     const nodeState: NodeState<S, E, T> = (this.stateMap.get(this.currentState))!;
-    const match: T | undefined = nodeState.outEdges.find(t => t.edge === edge);
+    const match: T | undefined = nodeState.outEdges.find(t => t.on === edge);
     if (match === undefined) {
       return null;
     } else {
-      // TOD: match.onTraversal(...)
+      // TODO: match.onTraversal(...)
+      if (nodeState.onLeave) {
+        await nodeState.onLeave();
+      }
+
+      this.onEventObservable.notifyObservers(getEventData<S>(NotificationType.StateLeave, this.currentState, match.nextState));
+
       const nextState: NodeState<S, E, T> = this.stateMap.get(match.nextState)!;
       if (nextState.onEnter) {
-        // TODO: move async out and await here?
-        nextState.onEnter();
+        await nextState.onEnter();
       }
+      const previousState = this.currentState;
       this.currentState = match.nextState;
       const result: MachinaState<S, E, T> = {
         current: match.nextState,
         possibleTransitions: nextState.outEdges
       }
 
-      this.onEventObservable.notifyObservers({
-        notificationType: NotificationType.StateEnter,
-        value: match.nextState
-      });
+      this.onEventObservable.notifyObservers(getEventData<S>(NotificationType.StateEnter, previousState, match.nextState));
 
       return result;
     }

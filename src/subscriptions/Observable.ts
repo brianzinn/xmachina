@@ -123,7 +123,7 @@ export class Observable<S, T> {
       }
 
       // tslint:disable-next-line:no-bitwise
-      if ((observer.notificationType & eventData.notificationType) && (observer.valueFilter === null || (observer.valueFilter === eventData.value))) {
+      if ((observer.notificationType & eventData.notificationType) && (observer.valueFilter === null || (observer.valueFilter === eventData.value.new))) {
         // if (observer.scope) {
         //     state.lastReturnValue = observer.callback.apply(observer.scope, [eventData, state]);
         // } else {
