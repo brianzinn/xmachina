@@ -39,9 +39,13 @@ export type Transition<S, E> = {
 
 const getEventData = <U>(notificationType: NotificationType, oldValue: Nullable<U>, newValue: U): EventData<U> => {
   const friendly = (nt: NotificationType): string => {
-    return (nt === NotificationType.StateEnter)
-      ? 'StateEnter'
-      : 'StateLeave';
+    if (nt === NotificationType.StateEnter) {
+      return 'StateEnter'
+    } else if (nt === NotificationType.StateLeave) {
+      return 'StateLeave';
+    } else {
+      return 'Transition';
+    }
   }
 
   return {
@@ -143,13 +147,13 @@ export class Machina<S, E, T extends Transition<S, E>> implements IMachina<S, E,
     }
   }
 
-  transition = async (edge: E): Promise<Nullable<MachinaState<S, E, T>>> => {
+  transition = async (transitionEdge: E): Promise<Nullable<MachinaState<S, E, T>>> => {
     if (!this.started) {
       throw new Error('Must start() Machine before transition(...).')
     }
     const nodeState: NodeState<S, E, T> = (this.stateMap.get(this.currentState))!;
-    const match: T | undefined = nodeState.outEdges.find(t => t.on === edge);
-    if (match === undefined) {
+    const transitionToFollow: T | undefined = nodeState.outEdges.find(t => t.on === transitionEdge);
+    if (transitionToFollow === undefined) {
       return null;
     } else {
       // TODO: match.onTraversal(...)
@@ -157,20 +161,26 @@ export class Machina<S, E, T extends Transition<S, E>> implements IMachina<S, E,
         await nodeState.onLeave();
       }
 
-      this.onEventObservable.notifyObservers(getEventData<S>(NotificationType.StateLeave, this.currentState, match.nextState));
+      this.onEventObservable.notifyObservers(getEventData<S>(NotificationType.StateLeave, this.currentState, transitionToFollow.nextState));
 
-      const nextState: NodeState<S, E, T> = this.stateMap.get(match.nextState)!;
+      if (transitionToFollow.onTransition !== undefined) {
+        await transitionToFollow.onTransition();
+      }
+
+      this.onEventObservable.notifyObservers(getEventData<E>(NotificationType.Transition, null, transitionToFollow.on));
+
+      const nextState: NodeState<S, E, T> = this.stateMap.get(transitionToFollow.nextState)!;
       if (nextState.onEnter) {
         await nextState.onEnter();
       }
       const previousState = this.currentState;
-      this.currentState = match.nextState;
+      this.currentState = transitionToFollow.nextState;
       const result: MachinaState<S, E, T> = {
-        current: match.nextState,
+        current: transitionToFollow.nextState,
         possibleTransitions: nextState.outEdges
       }
 
-      this.onEventObservable.notifyObservers(getEventData<S>(NotificationType.StateEnter, previousState, match.nextState));
+      this.onEventObservable.notifyObservers(getEventData<S>(NotificationType.StateEnter, previousState, transitionToFollow.nextState));
 
       return result;
     }

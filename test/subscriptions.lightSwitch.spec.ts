@@ -77,8 +77,8 @@ describe(' > test subscribe/unsubscribe and event notification/value filtering.'
       console.log(`callback received: ${eventData.event} => ${eventData.value.new}`);
     }
     const callbackSpy = sinon.spy(callback);
-    const observer = machina.subscribe(callbackSpy);
-    assert.notStrictEqual(null, observer, "If observer is NULL we are not subscribed.");
+    const observer = machina.subscribe(callbackSpy, NotificationType.StateEnter | NotificationType.StateLeave);
+    assert.notStrictEqual(null, observer, "if observer is NULL we are not subscribed.");
     machina.start();
 
     assert.strictEqual(callbackSpy.callCount, 1, 'should have been called one (from start)');
@@ -134,7 +134,7 @@ describe(' > test subscribe/unsubscribe and event notification/value filtering.'
       console.log(`callback received: ${eventData.event} => ${eventData.value.new}`);
     }
     const callbackSpy = sinon.spy(callback);
-    const observer = machina.subscribe(callbackSpy);
+    const observer = machina.subscribe(callbackSpy, NotificationType.StateEnter | NotificationType.StateLeave);
     assert.notStrictEqual(null, observer, "If observer is NULL we are not subscribed.");
     machina.start();
 
@@ -185,7 +185,7 @@ describe(' > test subscribe/unsubscribe and event notification/value filtering.'
     const callback2 = (eventData) => console.log(`callback received: ${eventData.event} => ${eventData.value.new}`);
 
     const callbackSpy1 = sinon.spy(callback1);
-    const observer1 = machina.subscribe(callbackSpy1);
+    const observer1 = machina.subscribe(callbackSpy1, NotificationType.StateEnter | NotificationType.StateLeave);
     assert.notStrictEqual(null, observer1, "If observer is NULL we are not subscribed.");
 
     const callbackSpy2 = sinon.spy(callback2);
@@ -241,11 +241,11 @@ describe(' > test subscribe/unsubscribe and event notification/value filtering.'
       console.log(`callback received: ${eventData.event} => ${eventData.value.new}`);
     }
     const callbackSpy1 = sinon.spy(callback1);
-    const observer1 = machina.subscribe(callbackSpy1);
+    const observer1 = machina.subscribe(callbackSpy1, NotificationType.StateEnter | NotificationType.StateLeave);
     assert.notStrictEqual(null, observer1, "If observer is NULL we are not subscribed.");
 
     const callbackSpy2 = sinon.spy(callback2);
-    const observer2 = machina.subscribe(callbackSpy2, undefined, undefined, true);
+    const observer2 = machina.subscribe(callbackSpy2, NotificationType.StateEnter | NotificationType.StateLeave, undefined, true);
     assert.notStrictEqual(null, observer2, "If observer is NULL we are not subscribed.");
     machina.start();
 
@@ -294,7 +294,7 @@ describe(' > test subscribe/unsubscribe and event notification/value filtering.'
       console.log(`callback received: ${eventData.event} => ${eventData.value.new}`);
     }
     const callbackSpy = sinon.spy(callback);
-    const observer = machina.subscribe(callbackSpy);
+    const observer = machina.subscribe(callbackSpy, NotificationType.StateEnter | NotificationType.StateLeave);
     assert.notStrictEqual(null, observer, "If observer is NULL we are not subscribed.");
     machina.start();
 
@@ -339,11 +339,11 @@ describe(' > test subscribe/unsubscribe and event notification/value filtering.'
 
     const callback1 = (eventData) => console.log(`callback1received: ${eventData.event} => ${eventData.value.new}`);
     const callback1Spy = sinon.spy(callback1);
-    machina.subscribe(callback1Spy);
+    machina.subscribe(callback1Spy, NotificationType.StateEnter | NotificationType.StateLeave);
 
     const callback2 = (eventData) => console.log(`callback received: ${eventData.event} => ${eventData.value.new}`);
     const callback2Spy = sinon.spy(callback2);
-    machina.subscribe(callback2Spy);
+    machina.subscribe(callback2Spy, NotificationType.StateEnter | NotificationType.StateLeave);
 
     machina.start();
 
@@ -381,7 +381,7 @@ describe(' > test subscribe/unsubscribe and event notification/value filtering.'
 
     const callback1 = (eventData) => console.log(`callback received: ${eventData.event} => ${eventData.value.old}->${eventData.value.new}`);
     const callback1Spy = sinon.spy(callback1);
-    machina.subscribe(callback1Spy);
+    machina.subscribe(callback1Spy, NotificationType.StateEnter | NotificationType.StateLeave);
 
     machina.start();
 

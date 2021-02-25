@@ -29,23 +29,20 @@ const LightTransition = {
 
 const machina = createMachina(LightState.On)
   .addState(LightState.On, {
+    description: 'turn off light switch',
     edge: LightTransition.TurnOff,
-    nextState: LightState.Off,
-    description: 'turn off light switch'
+    nextState: LightState.Off
   })
   .addState(LightState.Off, {
-    edge: LightTransition.TurnOn,
-    nextState: LightState.On,
     description: 'turn on light switch'
+    edge: LightTransition.TurnOn,
+    nextState: LightState.On
   })
   .build();
 
-// before starting you can register for events in a strongly typed manner.
-// subscribe to ALL events
-const observeEveryting = machina.subscribe((eventData) => console.log(`all: ${eventData.}`, eventData));
-// there are optional subscribe parameters
+// before calling start() you can register for notifications (you can register 'after' start(), but will miss events from before you subscribe)
 machina.subscribe((eventData) => console.log(`received: ${eventData.event} -> ${eventData.value.new}`));
-// you can filter the subscriptions you will receive by state/transition only and optionally by a single value.
+// there are optional subscribe parameters that are strongly typed to State/Transition
 machina.subscribe((eventData) => console.log(`single: ${eventData.event} -> ${eventData.value.new}`), NotificationType.StateEnter, LightState.On);
 machina.start();
 // all: StateEnter -> On
@@ -82,11 +79,9 @@ const machina = createMachina<LightState, LightTransition>(LightState.On)
   })
   .build();
 
-// before starting you can register for events in a strongly typed manner.
-// subscribe to ALL events
-const observeEveryting = machina.subscribe((eventData: EventData<LightState | LightTransition>) => console.log(`all: ${eventData.}`, eventData));
-// there are optional subscribe parameters
+// before calling start() you can register for notifications (you can register 'after' start(), but will miss events from before you subscribe)
 machina.subscribe((eventData: EventData<LightState | LightTransition>) => console.log(`received: ${eventData.event} -> ${eventData.value.new}`));
+// there are optional subscribe parameters that are strongly typed to State/Transition
 machina.subscribe((eventData: EventData<LightState | LightTransition>) => console.log(`single: ${eventData.event} -> ${eventData.value.new}`), NotificationType.StateEnter, LightState.On);
 machina.start();
 // all: StateEnter -> On
@@ -145,6 +140,67 @@ const machina = new Machina(LightState.On, new Map<LightState, NodeState<LightSt
 
 ---
 
+The code examples don't show the full API, but besides registering for events via pub/sub you can also pass in callbacks for `onEnter`/`onLeave` of State and when `onTransition` is traversed between states.
+```javascript
+const LightState = {
+  On: 'On',
+  Off: 'Off',
+}
+
+const LightTransition = {
+  TurnOff: 'TurnOff',
+  TurnOn: 'TurnOn'
+}
+
+// with fluent/builder API
+const machina = createMachina(LightState.On)
+  .addState(LightState.On, {
+      description: 'turn off light switch',
+      edge: LightTransition.TurnOff,
+      nextState: LightState.Off,
+      onTransition: async () => console.log('TurnOff transition')
+    },
+    async () => console.log('Enter "On" state'),
+    async () => console.log('Leave "On" state')
+  )
+  .addState(LightState.Off, {
+      description: 'turn on light switch',
+      edge: LightTransition.TurnOn,
+      nextState: LightState.On,
+      onTransition: async () => console.log('TurnOn transition')
+    },
+    async () => console.log('Enter "Off" state'),
+    async () => console.log('Leave "Off" state')
+  )
+  .buildAndStart();
+
+// with Machina constructor
+const machina = new Machina(LightState.On, new Map([
+  [LightState.On,
+  {
+    outEdges: [{
+      on: LightTransition.TurnOff,
+      description: 'turn off light',
+      nextState: LightState.Off,
+      onTransition: async () => console.log('TurnOff transition')
+    }],
+    onEnter: async () => console.log('Enter "On" state'),
+    onLeave: async () => console.log('Leave "On" state')
+  }],
+  [LightState.Off, {
+    outEdges: [{
+      on: LightTransition.TurnOn,
+      description: 'turn on light',
+      nextState: LightState.On,
+      onTransition: async () => console.log('TurnOn transition')
+    }],
+    onEnter: async () => console.log('Enter "Off" state'),
+    onLeave: async () => console.log('Leave "Off" state')
+  }]
+]))
+machina.start();
+```
+
 Name inspired from the movie ex-machina, but a tribute to popular library xstate (did not find machina.js till after - it does not look to be actively maintained).
 Why create a new library when there was already so many alternatives?
 1. :white_check_mark: small footprint 38kB (xstate is 682 kB)
@@ -154,5 +210,5 @@ Why create a new library when there was already so many alternatives?
 5. :white_check_mark: async transitions. can choose to just call or await/handle promise
 
 ## TODO:
-* add events when navigating transitions
+* add api/recipes page
 * add hierarchy example for state machines
