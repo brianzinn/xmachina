@@ -32,17 +32,23 @@ describe(' > createMachina traffic light builder tests', () => {
         on: LightTransitions.Next,
         nextState: LightState.Amber,
         description: 'to amber'
-      }, async () => console.log('turning green'))
+      }, {
+        onEnter: async () => console.log('turning green')
+      })
       .addState(LightState.Amber, {
         on: LightTransitions.Next,
         nextState: LightState.Red,
         description: 'to red'
-      }, async () => console.log('turning amber'))
+      }, {
+        onEnter: async () => console.log('turning amber')
+      })
       .addState(LightState.Red, {
         on: LightTransitions.Next,
         nextState: LightState.Green,
         description: "to green"
-      }, async () => console.log('turning red'))
+      }, {
+        onEnter: async () => console.log('turning red')
+      })
       .buildAndStart();
 
     assert.strictEqual(LightState.Green, machina.state.current);

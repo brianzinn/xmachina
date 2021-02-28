@@ -42,16 +42,25 @@ describe(' > createMachina multiple transitions from single state and duplicate 
         nextState: PhoneState.InCall,
         description: 'answer the incoming phone call'
       })
-      .addState(PhoneState.InCall, {
-        on: PhoneEdge.HangUp,
-        nextState: PhoneState.Idle,
-        description: "End current call"
-      }, async () => console.log('in call'))
-      .addState(PhoneState.InCall, {
-        on: PhoneEdge.PutOnHold,
-        nextState: PhoneState.OnHold,
-        description: "Put current call on hold"
-      }, async () => console.log('in call'))
+      .addState(
+        PhoneState.InCall,
+        {
+          on: PhoneEdge.HangUp,
+          nextState: PhoneState.Idle,
+          description: "End current call"
+        }, {
+          onEnter: async () => console.log('in call')
+        })
+      .addState(
+        PhoneState.InCall,
+        {
+          on: PhoneEdge.PutOnHold,
+          nextState: PhoneState.OnHold,
+          description: "Put current call on hold"
+        }, {
+          onEnter: async () => console.log('in call')
+        }
+      )
       .addState(PhoneState.OnHold, [{
         on: PhoneEdge.TakeOffHold,
         nextState: PhoneState.InCall,
@@ -80,21 +89,27 @@ describe(' > createMachina multiple transitions from single state and duplicate 
         nextState: PhoneState.InCall,
         description: 'answer the incoming phone call'
       })
-      .addState(PhoneState.InCall, {
+      .addState(
+        PhoneState.InCall,
+        {
           on: PhoneEdge.HangUp,
           nextState: PhoneState.Idle,
           description: "End current call"
         },
-        undefined,
-        async () => console.log('not "in call"')
+        {
+          onLeave: async () => console.log('not "in call"')
+        }
       )
-      .addState(PhoneState.InCall, {
+      .addState(
+        PhoneState.InCall,
+        {
           on: PhoneEdge.PutOnHold,
           nextState: PhoneState.OnHold,
           description: "Put current call on hold"
         },
-        undefined,
-        async () => console.log('not "in call"')
+        {
+        onLeave: async () => console.log('not "in call"')
+        }
       )
       .addState(PhoneState.OnHold, [{
         on: PhoneEdge.TakeOffHold,

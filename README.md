@@ -203,12 +203,14 @@ machina.start();
 
 Name inspired from the movie ex-machina, but a tribute to popular library xstate (did not find machina.js till after - it does not look to be actively maintained).
 Why create a new library when there was already so many alternatives?
-1. :white_check_mark: small footprint 38kB (xstate is 682 kB)
+1. :white_check_mark: small footprint ~40kB NPM (includes maps and typings)
 2. :white_check_mark: allow enumerations/numbers as first class citizens (not just strings)
 3. :white_check_mark: strong typing without forcing strings values on transitions
 4. :white_check_mark: easy pub/sub that supports subscriptions optionally with filters at subscription time
 5. :white_check_mark: async transitions. can choose to just call or await/handle promise
+6. :white_check_mark: nested hierarchies
+
+The library is intentionally minimalistic.  It is intentional that application state is managed outside of the state machine - will be showing examples of that in the recipes.
 
 ## TODO:
 * add api/recipes page
-* add hierarchy example for state machines
