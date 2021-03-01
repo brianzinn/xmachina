@@ -214,3 +214,7 @@ The library is intentionally minimalistic.  It is intentional that application s
 
 ## TODO:
 * add api/recipes page
+
+[live react 3D demo](https://brianzinn.github.io/xmachina-semaforo/)
+
+Made with ♥ by Brian Zinn
