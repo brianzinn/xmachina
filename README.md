@@ -30,18 +30,18 @@ const LightTransition = {
 const machina = createMachina(LightState.On)
   .addState(LightState.On, {
     description: 'turn off light switch',
-    edge: LightTransition.TurnOff,
+    on: LightTransition.TurnOff,
     nextState: LightState.Off
   })
   .addState(LightState.Off, {
     description: 'turn on light switch'
-    edge: LightTransition.TurnOn,
+    on: LightTransition.TurnOn,
     nextState: LightState.On
   })
   .build();
 
 // before calling start() you can register for notifications (you can register 'after' start(), but will miss events from before you subscribe)
-machina.subscribe((eventData) => console.log(`received: ${eventData.event} -> ${eventData.value.new}`));
+machina.subscribe((eventData) => console.log(`all: ${eventData.event} -> ${eventData.value.new}`));
 // there are optional subscribe parameters that are strongly typed to State/Transition
 machina.subscribe((eventData) => console.log(`single: ${eventData.event} -> ${eventData.value.new}`), NotificationType.StateEnter, LightState.On);
 machina.start();
@@ -68,19 +68,19 @@ enum LightTransition {
 
 const machina = createMachina<LightState, LightTransition>(LightState.On)
   .addState(LightState.On, {
-    edge: LightTransition.TurnOff,
+    on: LightTransition.TurnOff,
     nextState: LightState.Off,
     description: 'turn off light switch'
   })
   .addState(LightState.Off, {
-    edge: LightTransition.TurnOn,
+    on: LightTransition.TurnOn,
     nextState: LightState.On,
     description: 'turn on light switch'
   })
   .build();
 
 // before calling start() you can register for notifications (you can register 'after' start(), but will miss events from before you subscribe)
-machina.subscribe((eventData: EventData<LightState | LightTransition>) => console.log(`received: ${eventData.event} -> ${eventData.value.new}`));
+machina.subscribe((eventData: EventData<LightState | LightTransition>) => console.log(`all: ${eventData.event} -> ${eventData.value.new}`));
 // there are optional subscribe parameters that are strongly typed to State/Transition
 machina.subscribe((eventData: EventData<LightState | LightTransition>) => console.log(`single: ${eventData.event} -> ${eventData.value.new}`), NotificationType.StateEnter, LightState.On);
 machina.start();
@@ -156,7 +156,7 @@ const LightTransition = {
 const machina = createMachina(LightState.On)
   .addState(LightState.On, {
       description: 'turn off light switch',
-      edge: LightTransition.TurnOff,
+      on: LightTransition.TurnOff,
       nextState: LightState.Off,
       onTransition: async () => console.log('TurnOff transition')
     },
@@ -165,7 +165,7 @@ const machina = createMachina(LightState.On)
   )
   .addState(LightState.Off, {
       description: 'turn on light switch',
-      edge: LightTransition.TurnOn,
+      on: LightTransition.TurnOn,
       nextState: LightState.On,
       onTransition: async () => console.log('TurnOn transition')
     },
